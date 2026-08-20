@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSFLOW — Know before you board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0F1826;
+    --night-2:#172238;
+    --night-3:#202f4c;
+    --cream:#F5EFE1;
+    --card:#FFFDF8;
+    --ink:#1B2233;
+    --muted:#726C5C;
+    --muted-light:#B9C2D6;
+    --marigold:#F2994A;
+    --marigold-deep:#D9761F;
+    --indigo:#2B3A8F;
+    --empty:#FFFFFF;
+    --empty-border:#C9C2AE;
+    --empty-bg:#FFFFFF;
+    --green:#2FAE60;
+    --green-bg:#E4F6EC;
+    --yellow:#F0B429;
+    --yellow-bg:#FDF3DA;
+    --orange:#F2811D;
+    --orange-bg:#FCE7D3;
+    --red:#E5484D;
+    --red-bg:#FBE4E4;
+    --pin-blue:#2B6FF2;
+    --line:rgba(28,35,49,0.10);
+    --line-dark:rgba(245,239,225,0.12);
+    --radius:14px;
+    --shadow:0 10px 30px rgba(16,24,40,0.10);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Rajdhani',sans-serif;
+    letter-spacing:0.01em;
+    margin:0;
+  }
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;margin:0;padding:0;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  img,svg{display:block;}
+  .container{max-width:1180px;margin:0 auto;padding:0 28px;}
+  @media (max-width:640px){.container{padding:0 18px;}}
+
+  ::selection{background:var(--marigold);color:#fff;}
+
+  /* ---------- SCROLL PROGRESS ROUTE LINE ---------- */
+  .route-progress{
+    position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));
+    z-index:999;transition:width .1s linear;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(15,24,38,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-dark);
+  }
+  .nav-row{
+    display:flex;align-items:center;justify-content:space-between;
+    height:68px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--marigold),var(--marigold-deep));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 12px rgba(242,153,74,0.35);
+  }
+  .brand-mark svg{width:19px;height:19px;}
+  .brand-name{
+    color:#fff;font-size:22px;font-weight:700;
+    letter-spacing:0.04em;
+  }
+  .brand-name span{color:var(--marigold);}
+
+  nav.links{display:flex;align-items:center;gap:30px;}
+  nav.links a{
+    color:var(--muted-light);font-size:14.5px;font-weight:600;
+    padding:6px 2px;border-bottom:2px solid transparent;
+    transition:.2s;
+  }
+  nav.links a:hover{color:#fff;border-color:var(--marigold);}
+
+  .nav-right{display:flex;align-items:center;gap:16px;}
+  .lang-toggle{
+    display:flex;background:rgba(255,255,255,0.08);border-radius:20px;padding:3px;
+  }
+  .lang-toggle button{
+    padding:5px 12px;font-size:12.5px;font-weight:700;color:var(--muted-light);
+    border-radius:16px;transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--marigold);color:#1B1200;}
+
+  .icon-btn{
+    width:38px;height:38px;border-radius:50%;
+    background:rgba(255,255,255,0.08);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;transition:.2s;
+  }
+  .icon-btn:hover{background:var(--marigold);}
+  .icon-btn svg{width:18px;height:18px;}
+
+  .menu-toggle{display:none;color:#fff;}
+  @media (max-width:920px){
+    nav.links{display:none;}
+    .menu-toggle{display:flex;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(242,153,74,0.20), transparent 55%),
+      radial-gradient(ellipse at 90% 0%, rgba(43,58,143,0.35), transparent 50%),
+      linear-gradient(180deg,var(--night) 0%, var(--night-2) 100%);
+    padding:78px 0 54px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--marigold);
+    margin-bottom:18px;
+  }
+  .hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(47,174,96,0.25);animation:pulse-dot 1.8s infinite;}
+  @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+  .hero h1{
+    font-size:56px;font-weight:700;line-height:1.02;
+    max-width:680px;
+  }
+  .hero h1 em{font-style:normal;color:var(--marigold);}
+  .hero p.lede{
+    max-width:520px;color:var(--muted-light);font-size:16.5px;line-height:1.6;
+    margin-top:18px;font-family:'Inter',sans-serif;
+  }
+  @media (max-width:640px){.hero h1{font-size:38px;}}
+
+  /* "where to go" search column */
+  .search-card{
+    margin-top:34px;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+    padding:22px;
+    max-width:640px;
+  }
+  .search-card .label{
+    font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:12px;display:block;
+  }
+  .search-grid{
+    display:grid;grid-template-columns:1fr 1fr auto;gap:10px;
+  }
+  @media (max-width:640px){.search-grid{grid-template-columns:1fr;}}
+  .field{
+    position:relative;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:13px 14px 13px 38px;
+    border-radius:10px;border:1.5px solid var(--line);
+    background:#fff;font-family:'Inter',sans-serif;font-size:14.5px;color:var(--ink);
+    appearance:none;
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--marigold);outline-offset:1px;}
+  .field svg{
+    position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    width:15px;height:15px;color:var(--muted);
+  }
+  .go-btn{
+    background:linear-gradient(135deg,var(--marigold),var(--marigold-deep));
+    color:#fff;font-weight:700;font-size:14.5px;
+    padding:13px 22px;border-radius:10px;
+    display:flex;align-items:center;gap:8px;
+    white-space:nowrap;
+    box-shadow:0 8px 20px rgba(242,153,74,0.35);
+    transition:.2s;
+  }
+  .go-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(242,153,74,0.45);}
+
+  .city-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .city-chips button{
+    padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:600;
+    background:rgba(255,255,255,0.06);color:var(--muted-light);
+    border:1px solid var(--line-dark);transition:.15s;
+  }
+  .city-chips button.active, .city-chips button:hover{
+    background:var(--marigold);color:#1B1200;border-color:transparent;
+  }
+
+  .scroll-cue{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    margin-top:52px;color:var(--muted-light);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    animation:bob 2s infinite;
+  }
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+  /* ---------- SIGNATURE: THE GAP visual ---------- */
+  .gap-section{background:var(--night-2);padding:0 0 70px;position:relative;}
+  .gap-road{
+    position:relative;
+    height:190px;
+    margin:0 auto;
+    max-width:1180px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 26px, rgba(255,255,255,0.16) 26px 46px),
+      linear-gradient(#232f47,#232f47);
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid var(--line-dark);
+  }
+  .gap-road::before, .gap-road::after{
+    content:'';position:absolute;top:0;bottom:0;width:6px;background:var(--night);
+  }
+  .gap-road::before{left:0;} .gap-road::after{right:0;}
+
+  .bus-icon{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:86px;height:44px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;
+    font-family:'Rajdhani',sans-serif;font-weight:700;color:#fff;
+    box-shadow:0 10px 20px rgba(0,0,0,0.35);
+  }
+  .bus-icon small{font-family:'Inter',sans-serif;font-weight:600;font-size:9.5px;opacity:.9;letter-spacing:.03em;}
+  .bus-lead{
+    background:linear-gradient(135deg,var(--red),#c33338);
+    animation:driftLead 7s ease-in-out infinite;
+  }
+  .bus-trail{
+    background:linear-gradient(135deg,var(--green),#218a4c);
+    animation:driftTrail 7s ease-in-out infinite;
+  }
+  @keyframes driftLead{
+    0%{left:8%;} 45%{left:60%;} 55%{left:60%;} 100%{left:82%;}
+  }
+  @keyframes driftTrail{
+    0%{left:-14%;} 45%{left:22%;} 55%{left:22%;} 100%{left:46%;}
+  }
+  .gap-tag{
+    position:absolute;bottom:14px;left:22%;
+    background:rgba(15,24,38,0.9);border:1px solid var(--line-dark);
+    color:var(--marigold);font-size:11.5px;font-weight:700;
+    padding:6px 12px;border-radius:20px;
+    animation:driftTrail 7s ease-in-out infinite;
+  }
+  .gap-caption{max-width:1180px;margin:22px auto 0;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+  .gap-caption h3{color:#fff;font-size:22px;font-weight:600;max-width:520px;}
+  .gap-caption p{color:var(--muted-light);font-size:14px;max-width:420px;line-height:1.6;margin-top:8px;}
+  .gap-legend{display:flex;gap:18px;flex-wrap:wrap;}
+  .gap-legend .item{display:flex;align-items:center;gap:8px;color:var(--muted-light);font-size:13px;}
+  .gap-legend .swatch{width:11px;height:11px;border-radius:50%;}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{padding:70px 0;}
+  .section.alt{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:36px;}
+  .sec-head .tag{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--marigold-deep);margin-bottom:8px;display:block;}
+  .sec-head h2{font-size:34px;font-weight:700;}
+  .sec-head p{color:var(--muted);max-width:440px;font-size:14.5px;line-height:1.6;}
+
+  /* ---------- LIVE MAP ---------- */
+  .map-wrap{
+    display:grid;grid-template-columns:1.5fr 1fr;gap:22px;
+  }
+  @media (max-width:900px){.map-wrap{grid-template-columns:1fr;}}
+  .map-box{
+    position:relative;height:440px;border-radius:var(--radius);
+    background:
+      linear-gradient(rgba(43,58,143,0.05),rgba(43,58,143,0.05)),
+      repeating-linear-gradient(0deg, #e9e3d3 0 1px, transparent 1px 42px),
+      repeating-linear-gradient(90deg, #e9e3d3 0 1px, transparent 1px 42px),
+      #f2ecdd;
+    border:1px solid var(--line);
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  /* ---- realistic map dressing ---- */
+  .map-block{
+    position:absolute;background:#e3ddca;border:1px solid #d3cbb2;border-radius:4px;
+  }
+  .map-park{
+    position:absolute;background:#cfe3c4;border:1px solid #b6d2a5;border-radius:10px;
+  }
+  .map-park-label{
+    position:absolute;font-size:10.5px;font-weight:700;color:#4f7a3d;letter-spacing:.02em;
+    text-transform:uppercase;
+  }
+  .map-water{
+    position:absolute;background:#c7dcef;border:1px solid #b3cee8;border-radius:8px;
+  }
+  .street-label{
+    position:absolute;font-size:9.5px;font-weight:600;color:#8a8368;letter-spacing:.03em;
+    white-space:nowrap;background:rgba(242,236,221,0.85);padding:0 4px;border-radius:3px;
+  }
+  .street-label.vert{writing-mode:vertical-rl;}
+  .poi-label{
+    position:absolute;font-size:10px;font-weight:700;color:var(--ink);
+    background:#fff;padding:2px 7px;border-radius:5px;box-shadow:0 2px 6px rgba(0,0,0,0.12);
+  }
+
+  .map-route-line{
+    position:absolute;height:5px;background:var(--pin-blue);
+    border-radius:4px;box-shadow:0 1px 4px rgba(43,111,242,0.35);
+  }
+  .map-route-line.alt{background:var(--marigold);box-shadow:0 1px 4px rgba(242,153,74,0.35);}
+  .rl1{top:120px;left:6%;width:64%;transform:rotate(3deg);}
+  .rl2{top:250px;left:16%;width:52%;transform:rotate(-6deg);}
+  .rl3{top:332px;left:2%;width:36%;transform:rotate(6deg);}
+  .route-tag{
+    position:absolute;font-size:9.5px;font-weight:800;color:#fff;
+    background:var(--pin-blue);padding:2px 7px;border-radius:9px;letter-spacing:.02em;
+  }
+  .route-tag.alt{background:var(--marigold-deep);}
+
+  .stop-dot{
+    position:absolute;width:9px;height:9px;border-radius:50%;
+    background:#fff;border:2px solid var(--pin-blue);
+  }
+  .map-marker{
+    position:absolute;width:26px;height:26px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 14px rgba(0,0,0,0.25);
+    cursor:pointer;border:2px solid rgba(255,255,255,0.9);
+  }
+  .map-marker svg{width:13px;height:13px;color:#fff;}
+  .map-marker.empty{background:var(--empty);border-color:var(--empty-border);}
+  .map-marker.empty svg{color:var(--muted);}
+  .map-marker.green{background:var(--green);}
+  .map-marker.yellow{background:var(--yellow);}
+  .map-marker.orange{background:var(--orange);}
+  .map-marker.red{background:var(--red);}
+  .map-marker::after{
+    content:'';position:absolute;inset:-8px;border-radius:50%;
+    border:2px solid currentColor;opacity:.4;animation:radar 2s infinite;
+  }
+  .map-marker.empty::after{border-color:var(--empty-border);}
+  .map-marker.green::after{border-color:var(--green);}
+  .map-marker.yellow::after{border-color:var(--yellow);}
+  .map-marker.orange::after{border-color:var(--orange);}
+  .map-marker.red::after{border-color:var(--red);}
+  @keyframes radar{0%{transform:scale(0.6);opacity:.6;}100%{transform:scale(1.5);opacity:0;}}
+
+  .you-are-here{
+    position:absolute;width:28px;height:28px;
+    transform:translate(-50%,-100%);
+  }
+  .you-are-here svg{width:28px;height:28px;filter:drop-shadow(0 4px 8px rgba(43,58,143,0.45));}
+  .you-are-here-label{
+    position:absolute;top:-8px;left:50%;transform:translate(-50%,-100%);
+    background:var(--night);color:#fff;font-size:10px;font-weight:700;
+    padding:3px 8px;border-radius:6px;white-space:nowrap;
+  }
+  .you-are-here-label::after{
+    content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
+    border:4px solid transparent;border-top-color:var(--night);
+  }
+
+  .map-legend{
+    position:absolute;bottom:14px;left:14px;background:#fff;border-radius:10px;
+    padding:9px 12px;box-shadow:var(--shadow);display:flex;gap:11px;font-size:10.5px;font-weight:600;color:var(--ink);
+    flex-wrap:wrap;max-width:230px;
+  }
+  .map-legend .item{display:flex;align-items:center;gap:5px;}
+  .map-legend .dot{width:9px;height:9px;border-radius:50%;border:1px solid rgba(0,0,0,0.15);}
+
+  .gps-pill{
+    position:absolute;top:14px;right:14px;background:#fff;border-radius:20px;
+    padding:7px 13px;font-size:12px;font-weight:700;color:var(--indigo);
+    box-shadow:var(--shadow);display:flex;align-items:center;gap:6px;
+  }
+  .gps-pill svg{width:13px;height:13px;}
+
+  /* bus results list */
+  .bus-list{display:flex;flex-direction:column;gap:12px;}
+  .bus-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .bus-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .bus-route-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;}
+  .bus-route-sub{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .status-pill{
+    font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    padding:5px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+  .status-pill .dot{width:7px;height:7px;border-radius:50%;}
+  .status-pill.empty{background:#F4F1E8;color:#6b6650;border:1px solid var(--empty-border);}
+  .status-pill.empty .dot{background:var(--empty);border:1.5px solid var(--empty-border);}
+  .status-pill.green{background:var(--green-bg);color:#1c7a45;}
+  .status-pill.green .dot{background:var(--green);}
+  .status-pill.yellow{background:var(--yellow-bg);color:#8a6206;}
+  .status-pill.yellow .dot{background:var(--yellow);}
+  .status-pill.orange{background:var(--orange-bg);color:#a1500c;}
+  .status-pill.orange .dot{background:var(--orange);}
+  .status-pill.red{background:var(--red-bg);color:#af2c30;}
+  .status-pill.red .dot{background:var(--red);}
+
+  .bus-card-meta{display:flex;gap:18px;font-size:13px;color:var(--muted);flex-wrap:wrap;}
+  .bus-card-meta b{color:var(--ink);}
+  .next-bus-note{
+    margin-top:4px;background:var(--green-bg);border:1px dashed #9fd6b6;color:#1c7a45;
+    font-size:12.5px;font-weight:600;border-radius:8px;padding:8px 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .next-bus-note svg{width:14px;height:14px;flex-shrink:0;}
+
+  /* ---------- FEATURES ---------- */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:900px){.feat-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:600px){.feat-grid{grid-template-columns:1fr;}}
+  .feat-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);
+    transition:.2s;
+  }
+  .feat-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(16,24,40,0.14);}
+  .feat-icon{
+    width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,var(--indigo),#3d4fb0);
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+  }
+  .feat-icon svg{width:20px;height:20px;color:#fff;}
+  .feat-card h3{font-size:18px;font-weight:600;margin-bottom:8px;}
+  .feat-card p{font-size:13.5px;color:var(--muted);line-height:1.6;}
+  .feat-card.marigold .feat-icon{background:linear-gradient(135deg,var(--marigold),var(--marigold-deep));}
+
+  /* ---------- CROWD LEGEND STRIP ---------- */
+  .legend-strip{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+  }
+  @media (max-width:980px){.legend-strip{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:600px){.legend-strip{grid-template-columns:1fr 1fr;}}
+  .legend-card{
+    border-radius:var(--radius);padding:20px 18px;color:#fff;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .legend-card h3{font-size:16.5px;font-weight:700;}
+  .legend-card p{font-size:12.5px;opacity:.92;line-height:1.5;}
+  .legend-card.empty{background:linear-gradient(135deg,#FFFFFF,#EDE8D9);color:var(--ink);border:1px solid var(--empty-border);}
+  .legend-card.green{background:linear-gradient(135deg,#2FAE60,#1c7a45);}
+  .legend-card.yellow{background:linear-gradient(135deg,#F0B429,#c68b0d);}
+  .legend-card.orange{background:linear-gradient(135deg,#F2811D,#b85c0f);}
+  .legend-card.red{background:linear-gradient(135deg,#E5484D,#af2c30);}
+
+  /* ---------- PROFILE / HELP MODALS ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(15,24,38,0.55);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--card);border-radius:16px;max-width:420px;width:100%;
+    padding:26px;box-shadow:0 30px 70px rgba(0,0,0,0.35);
+    max-height:85vh;overflow-y:auto;
+  }
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .modal-head h3{font-size:21px;font-weight:700;}
+  .modal-close{width:30px;height:30px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;}
+  .modal-close svg{width:14px;height:14px;}
+
+  .profile-avatar{
+    width:60px;height:60px;border-radius:50%;
+    background:linear-gradient(135deg,var(--indigo),var(--marigold));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:22px;
+    margin-bottom:12px;
+  }
+  .profile-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .profile-row span:first-child{color:var(--muted);}
+  .profile-row span:last-child{font-weight:600;}
+  .modal-btn{
+    margin-top:16px;width:100%;padding:12px;border-radius:10px;
+    background:var(--night);color:#fff;font-weight:700;font-size:14px;
+  }
+  .modal-btn.outline{background:transparent;border:1.5px solid var(--line);color:var(--ink);margin-top:8px;}
+
+  .help-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+  .help-item{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--cream);border-radius:10px;padding:12px 14px;font-size:13.5px;font-weight:600;
+  }
+  .help-item .num{color:var(--red);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;}
+
+  .faq{border-top:1px solid var(--line);}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%;text-align:left;padding:12px 2px;display:flex;justify-content:space-between;align-items:center;
+    font-weight:600;font-size:13.5px;color:var(--ink);
+  }
+  .faq-q svg{width:14px;height:14px;transition:.2s;flex-shrink:0;}
+  .faq-item.open .faq-q svg{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:.25s;font-size:13px;color:var(--muted);line-height:1.6;}
+  .faq-item.open .faq-a{max-height:140px;padding-bottom:12px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--night);color:var(--muted-light);padding:50px 0 26px;}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;}
+  @media (max-width:800px){.foot-grid{grid-template-columns:1fr 1fr;}}
+  .foot-grid h4{color:#fff;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;}
+  .foot-grid ul li{margin-bottom:9px;font-size:13.5px;}
+  .foot-grid ul li a:hover{color:var(--marigold);}
+  .foot-brand p{font-size:13.5px;line-height:1.7;max-width:280px;margin-top:12px;color:var(--muted-light);}
+  .foot-bottom{
+    margin-top:40px;padding-top:20px;border-top:1px solid var(--line-dark);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--muted-light);
+  }
+
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+  :focus-visible{outline:2px solid var(--marigold);outline-offset:2px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001s !important; animation-iteration-count:1 !important; transition-duration:0.001s !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="route-progress" id="routeProgress"></div>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="container nav-row">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#12213A" stroke-width="2.2" stroke-linecap="round"><path d="M4 16V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9"/><path d="M4 16h16"/><circle cx="7.5" cy="18.5" r="1.5" fill="#12213A"/><circle cx="16.5" cy="18.5" r="1.5" fill="#12213A"/><path d="M6 11h12"/></svg>
+      </span>
+      <span class="brand-name">BUS<span>FLOW</span></span>
+    </div>
+    <nav class="links">
+      <a href="#map">Live Map</a>
+      <a href="#routes">Routes</a>
+      <a href="#features">Features</a>
+      <a href="#help">Help</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" id="langToggle">
+        <button class="active" data-lang="EN">EN</button>
+        <button data-lang="HI">हि</button>
+      </div>
+      <button class="icon-btn" id="helpBtn" aria-label="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.3 1-1.3 1.9v.3"/><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="icon-btn" id="profileBtn" aria-label="Profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.3-3.6 4.2-5.5 7.5-5.5s6.2 1.9 7.5 5.5"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow"><span class="dot"></span> Live across 6 Indian cities · updated every 15 sec</div>
+    <h1>Don't board blind.<br>See the <em>emptier bus</em> before it arrives.</h1>
+    <p class="lede">BUSFLOW shows you exactly how crowded every bus on your route is — right now — so you're never the one stuffed onto a packed 41 while a near-empty one trails three minutes behind.</p>
+
+    <div class="search-card">
+      <span class="label">Where to go?</span>
+      <div class="search-grid">
+        <div class="field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-6.5 7-11a7 7 0 0 0-14 0c0 4.5 7 11 7 11Z"/></svg>
+          <input type="text" id="fromInput" placeholder="From — e.g. Swargate" value="Swargate">
+        </div>
+        <div class="field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          <input type="text" id="toInput" placeholder="To — e.g. Hinjewadi" value="Hinjewadi Phase 1">
+        </div>
+        <button class="go-btn" id="searchBtn">
+          Find buses
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="city-chips" id="cityChips">
+        <button class="active" data-city="Pune">Pune · PMPML</button>
+        <button data-city="Mumbai">Mumbai · BEST</button>
+        <button data-city="Delhi">Delhi · DTC</button>
+        <button data-city="Bengaluru">Bengaluru · BMTC</button>
+        <button data-city="Chennai">Chennai · MTC</button>
+        <button data-city="Hyderabad">Hyderabad · TSRTC</button>
+      </div>
+    </div>
+
+    <div class="scroll-cue">
+      <span>Scroll for live map</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SIGNATURE: THE GAP ================= -->
+<section class="gap-section">
+  <div class="container">
+    <div class="gap-caption">
+      <div>
+        <h3>This is "the gap" — the whole problem, in one road.</h3>
+      </div>
+      <div class="gap-legend">
+        <div class="item"><span class="swatch" style="background:var(--red)"></span> Leading bus — overcrowded, slowing</div>
+        <div class="item"><span class="swatch" style="background:var(--green)"></span> Trailing bus — not crowded, 3–5 min behind</div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-road container">
+    <div class="bus-icon bus-lead">PMPML 41<small>FULL · SLOWING</small></div>
+    <div class="bus-icon bus-trail">PMPML 41<small>ROOMY</small></div>
+    <div class="gap-tag">4 min behind · 22 seats free</div>
+  </div>
+</section>
+
+<!-- ================= LIVE MAP ================= -->
+<section class="section" id="map">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="tag">Live Tracking</span>
+        <h2>Where every bus is, right now</h2>
+      </div>
+      <p>GPS-tracked positions refresh every 15 seconds. Tap a marker for live occupancy, next stop and ETA.</p>
+    </div>
+
+    <div class="map-wrap">
+      <div class="map-box">
+        <div class="gps-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          GPS live
+        </div>
+
+        <!-- city blocks -->
+        <div class="map-block" style="top:24px;left:4%;width:70px;height:44px;"></div>
+        <div class="map-block" style="top:24px;left:20%;width:90px;height:44px;"></div>
+        <div class="map-block" style="top:24px;left:48%;width:60px;height:44px;"></div>
+        <div class="map-block" style="top:24px;left:66%;width:100px;height:44px;"></div>
+        <div class="map-block" style="top:86px;left:66%;width:110px;height:58px;"></div>
+        <div class="map-block" style="top:210px;left:56%;width:120px;height:50px;"></div>
+        <div class="map-block" style="top:270px;left:56%;width:120px;height:44px;"></div>
+        <div class="map-block" style="top:24px;left:84%;width:70px;height:130px;"></div>
+        <div class="map-block" style="top:300px;left:4%;width:80px;height:60px;"></div>
+
+        <!-- park -->
+        <div class="map-park" style="top:150px;left:2%;width:150px;height:120px;"></div>
+        <div class="map-park-label" style="top:160px;left:18px;">Sambhaji Park</div>
+
+        <!-- streets -->
+        <div class="street-label" style="top:6px;left:22%;">JM Road</div>
+        <div class="street-label" style="top:6px;left:68%;">FC Road</div>
+        <div class="street-label" style="top:282px;left:6%;">Karve Road</div>
+        <div class="street-label vert" style="top:60px;left:52%;">Tilak Road</div>
+        <div class="street-label vert" style="top:230px;left:78%;">Bajirao Road</div>
+        <div class="street-label" style="top:398px;left:64%;">Laxmi Road</div>
+
+        <!-- points of interest -->
+        <div class="poi-label" style="top:14px;left:2px;">Pune Station</div>
+        <div class="poi-label" style="top:296px;left:60%;">Shivajinagar Depot</div>
+
+        <div class="map-route-line rl1"></div>
+        <div class="route-tag" style="top:112px;left:36%;">41</div>
+        <div class="map-route-line rl2 alt"></div>
+        <div class="route-tag alt" style="top:246px;left:60%;">12</div>
+        <div class="map-route-line rl3"></div>
+        <div class="route-tag" style="top:326px;left:4%;">5</div>
+
+        <div class="stop-dot" style="top:118px;left:8%"></div>
+        <div class="stop-dot" style="top:100px;left:38%"></div>
+        <div class="stop-dot" style="top:255px;left:20%"></div>
+        <div class="stop-dot" style="top:330px;left:12%"></div>
+
+        <div class="you-are-here" style="top:130px;left:16%" title="You are here">
+          <svg viewBox="0 0 24 24" fill="var(--pin-blue)" stroke="#fff" stroke-width="1.5"><path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8Z"/><circle cx="12" cy="10" r="2.6" fill="#fff" stroke="none"/></svg>
+        </div>
+        <div class="you-are-here-label" style="top:98px;left:16%;transform:translate(-50%,-100%);">You are here</div>
+
+        <button class="map-marker red" style="top:96px;left:32%" title="PMPML 41 — Overcrowded">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 16V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"/><path d="M5 16h14"/></svg>
+        </button>
+        <button class="map-marker green" style="top:150px;left:14%" title="PMPML 41A — Not crowded, 4 min behind">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 16V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"/><path d="M5 16h14"/></svg>
+        </button>
+        <button class="map-marker orange" style="top:250px;left:48%" title="PMPML 12 — Crowded">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 16V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"/><path d="M5 16h14"/></svg>
+        </button>
+        <button class="map-marker empty" style="top:320px;left:24%" title="PMPML 5 — Empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 16V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"/><path d="M5 16h14"/></svg>
+        </button>
+        <button class="map-marker yellow" style="top:70px;left:70%" title="PMPML 5A — Moderate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 16V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"/><path d="M5 16h14"/></svg>
+        </button>
+
+        <div class="map-legend">
+          <div class="item"><span class="dot" style="background:var(--empty);border-color:var(--empty-border);"></span>Empty</div>
+          <div class="item"><span class="dot" style="background:var(--green)"></span>Not crowded</div>
+          <div class="item"><span class="dot" style="background:var(--yellow)"></span>Moderate</div>
+          <div class="item"><span class="dot" style="background:var(--orange)"></span>Crowded</div>
+          <div class="item"><span class="dot" style="background:var(--red)"></span>Overcrowded</div>
+        </div>
+      </div>
+
+      <div class="bus-list" id="busList">
+        <!-- filled by JS, static fallback below -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CROWD LEGEND ================= -->
+<section class="section alt" id="routes">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="tag">Occupancy Signal</span>
+        <h2>Five colours. One glance.</h2>
+      </div>
+      <p>Every bus reports its crowd level from onboard sensors and driver check-ins, shown the same way at the stop, in-app and on the map.</p>
+    </div>
+    <div class="legend-strip">
+      <div class="legend-card empty">
+        <h3>⚪ Empty</h3>
+        <p>Under 20% capacity. Almost the whole bus free.</p>
+      </div>
+      <div class="legend-card green">
+        <h3>🟢 Not crowded</h3>
+        <p>20–45% capacity. Comfortable, seats available.</p>
+      </div>
+      <div class="legend-card yellow">
+        <h3>🟡 Moderate</h3>
+        <p>45–70% capacity. Most seats taken, a few left.</p>
+      </div>
+      <div class="legend-card orange">
+        <h3>🟠 Crowded</h3>
+        <p>70–90% capacity. Standing room only.</p>
+      </div>
+      <div class="legend-card red">
+        <h3>🔴 Overcrowded</h3>
+        <p>Over 90% capacity. BUSFLOW auto-suggests the next bus.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="tag">Built for Indian commutes</span>
+        <h2>More than a bus tracker</h2>
+      </div>
+      <p>Designed around how buses actually run in Indian cities — patchy signal, women's safety, regional languages and all.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+        <h3>Live GPS tracking</h3>
+        <p>Every bus's exact location, speed and route progress updated every 15 seconds — see it approach in real time.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2" fill="#fff" stroke="none"/><circle cx="15" cy="9" r="1.2" fill="#fff" stroke="none"/><circle cx="9" cy="15" r="1.2" fill="#fff" stroke="none"/></svg></div>
+        <h3>5-level crowd colours</h3>
+        <p>White, green, yellow, orange or red — onboard sensors estimate occupancy so you know before it arrives whether you'll be standing, squeezed, or comfortable.</p>
+      </div>
+      <div class="feat-card marigold">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <h3>Automatic "next bus" alert</h3>
+        <p>If the approaching bus is red, we instantly show the next one's ETA and occupancy so you're never stuck deciding.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 20a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"/><path d="M9 9l6 6M15 9l-6 6"/></svg></div>
+        <h3>Works without data — SMS fallback</h3>
+        <p>Low signal near your stop? Text your stop code to <b>56070</b> and get ETA + crowd colour back by SMS, no app needed.</p>
+      </div>
+      <div class="feat-card marigold">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4Z"/></svg></div>
+        <h3>Women's safety mode</h3>
+        <p>Highlights buses with a marshal or pink-seat availability, plus a one-tap panic alert linked to helpline 1091.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg></div>
+        <h3>Hindi &amp; regional languages</h3>
+        <p>Switch the entire app to Hindi, Marathi, Tamil, Telugu or Kannada — because transit info should work for everyone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROFILE PREVIEW STRIP ================= -->
+<section class="section alt">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="tag">Your account</span>
+        <h2>Saved routes, one tap away</h2>
+      </div>
+      <p>Pin your daily commute so BUSFLOW opens straight to the route you actually take.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.5 7-11a7 7 0 0 0-14 0c0 4.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+        <h3>Home → Work, pinned</h3>
+        <p>Swargate → Hinjewadi Phase 1, PMPML 41. Notified automatically every weekday at 8:40 AM.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h3>UPI fare pass</h3>
+        <p>Link any UPI app to auto-recharge your smart card when it drops below ₹50.</p>
+      </div>
+      <div class="feat-card marigold">
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.3-3.6 4.2-5.5 7.5-5.5s6.2 1.9 7.5 5.5"/></svg></div>
+        <h3>Open your profile</h3>
+        <p>Manage saved routes, language and safety settings.</p>
+        <button class="modal-btn" style="margin-top:14px;width:auto;padding:9px 16px;font-size:13px;" onclick="document.getElementById('profileBtn').click()">View profile</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HELP ================= -->
+<section class="section" id="help">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="tag">Support</span>
+        <h2>Need a hand?</h2>
+      </div>
+      <p>Technical issues, wrong GPS pins or safety concerns — reach us however's easiest.</p>
+    </div>
+    <div class="map-wrap">
+      <div>
+        <div class="faq">
+          <div class="faq-item open">
+            <button class="faq-q">The map shows my bus in the wrong place <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="faq-a">GPS pins can lag by 10–15 seconds in dense traffic or tunnels. If it's off by more than 500m for over 2 minutes, report it from the bus card so we can flag the device.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">The crowd colour doesn't match what I see <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="faq-a">Occupancy is estimated from onboard sensors and updated at each stop. On sensor-less older buses, drivers self-report — tap "Suggest a correction" on the bus card to help us improve it.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">I don't have mobile data on my route <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="faq-a">Text your stop code (printed on the bus stop sign) to 56070. You'll get the next 2 buses' ETA and crowd colour by SMS.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q">How do I report a safety issue on board? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="faq-a">Use the panic button in Women's Safety Mode, or call 112 (national) / 1091 (women's helpline) directly — both are one tap from the Help menu.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="help-grid">
+          <div class="help-item"><span>National Emergency</span><span class="num">112</span></div>
+          <div class="help-item"><span>Women's Safety Helpline</span><span class="num">1091</span></div>
+          <div class="help-item"><span>BUSFLOW Support (call/SMS)</span><span class="num">56070</span></div>
+          <div class="help-item"><span>Support email</span><span class="num" style="font-size:13px;color:var(--indigo)">help@busflow.in</span></div>
+        </div>
+        <button class="modal-btn" id="reportBtn">Report a technical issue</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="container foot-grid">
+    <div class="foot-brand">
+      <div class="brand">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#12213A" stroke-width="2.2" stroke-linecap="round"><path d="M4 16V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9"/><path d="M4 16h16"/><circle cx="7.5" cy="18.5" r="1.5" fill="#12213A"/><circle cx="16.5" cy="18.5" r="1.5" fill="#12213A"/><path d="M6 11h12"/></svg></span>
+        <span class="brand-name">BUS<span>FLOW</span></span>
+      </div>
+      <p>Real-time crowd visibility for Indian public transit — so nobody has to guess, rush, or overcrowd a bus again.</p>
+    </div>
+    <div>
+      <h4>Cities</h4>
+      <ul><li><a href="#">Pune</a></li><li><a href="#">Mumbai</a></li><li><a href="#">Delhi NCR</a></li><li><a href="#">Bengaluru</a></li></ul>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul><li><a href="#map">Live map</a></li><li><a href="#routes">Crowd signal</a></li><li><a href="#features">Features</a></li></ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul><li><a href="#help">Help centre</a></li><li><a href="#">SMS: 56070</a></li><li><a href="#">Emergency: 112</a></li></ul>
+    </div>
+  </div>
+  <div class="container foot-bottom">
+    <span>© 2026 BUSFLOW. Built for Indian commuters.</span>
+    <span>Data refreshes every 15 seconds · Available in 6 languages</span>
+  </div>
+</footer>
+
+<!-- ================= PROFILE MODAL ================= -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Your profile</h3>
+      <button class="modal-close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+    </div>
+    <div class="profile-avatar">RS</div>
+    <h3 style="font-size:19px;">Rohan Sharma</h3>
+    <p style="font-size:13px;color:var(--muted);margin-top:2px;">rohan.sharma@example.in</p>
+    <div style="margin-top:14px;">
+      <div class="profile-row"><span>Home city</span><span>Pune</span></div>
+      <div class="profile-row"><span>Pinned route</span><span>Swargate → Hinjewadi</span></div>
+      <div class="profile-row"><span>Language</span><span id="profileLang">English</span></div>
+      <div class="profile-row"><span>Women's safety mode</span><span>Off</span></div>
+      <div class="profile-row"><span>Smart card balance</span><span>₹184</span></div>
+    </div>
+    <button class="modal-btn">Edit saved routes</button>
+    <button class="modal-btn outline" data-close>Close</button>
+  </div>
+</div>
+
+<!-- ================= HELP MODAL (technical report) ================= -->
+<div class="modal-overlay" id="reportModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Report an issue</h3>
+      <button class="modal-close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Tell us what went wrong — GPS drift, wrong crowd colour, app crash, anything.</p>
+    <div class="field" style="margin-bottom:10px;">
+      <input type="text" placeholder="Bus route (e.g. PMPML 41)" style="padding-left:14px;">
+    </div>
+    <div class="field" style="margin-bottom:10px;">
+      <textarea placeholder="Describe the issue" rows="4" style="width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--line);font-family:'Inter',sans-serif;font-size:14px;"></textarea>
+    </div>
+    <button class="modal-btn" onclick="submitReport()">Submit report</button>
+  </div>
+</div>
+
+<script>
+  // ---- scroll progress bar ----
+  const progress = document.getElementById('routeProgress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = pct + '%';
+  });
+
+  // ---- language toggle (demo copy swap) ----
+  const langButtons = document.querySelectorAll('#langToggle button');
+  const hiCopy = {
+    heroP: "बसफ्लो आपको हर बस की भीड़ की स्थिति दिखाता है — ताकि आप कभी भी भरी हुई बस में न चढ़ें जब एक खाली बस कुछ मिनट पीछे आ रही हो।",
+  };
+  const enCopy = {
+    heroP: "BUSFLOW shows you exactly how crowded every bus on your route is — right now — so you're never the one stuffed onto a packed 41 while a near-empty one trails three minutes behind."
+  };
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      langButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const lede = document.querySelector('.hero p.lede');
+      const profLang = document.getElementById('profileLang');
+      if (btn.dataset.lang === 'HI') {
+        lede.textContent = hiCopy.heroP;
+        profLang.textContent = 'हिन्दी';
+      } else {
+        lede.textContent = enCopy.heroP;
+        profLang.textContent = 'English';
+      }
+    });
+  });
+
+  // ---- city chips ----
+  document.querySelectorAll('#cityChips button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#cityChips button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // ---- mock route data per selection, rendered into bus list ----
+  const busData = [
+    {route:'PMPML 41', sub:'Swargate → Hinjewadi Phase 1', status:'red', eta:'2 min', seats:'0 seats · standing only', next:'Next bus (not crowded) in 4 min · 22 seats free'},
+    {route:'PMPML 41A', sub:'Swargate → Hinjewadi Phase 1', status:'green', eta:'6 min', seats:'22 seats free', next:null},
+    {route:'PMPML 12', sub:'Katraj → Wagholi', status:'orange', eta:'5 min', seats:'standing room only', next:null},
+    {route:'PMPML 5', sub:'Pune Station → Hadapsar', status:'empty', eta:'8 min', seats:'34 seats free', next:null},
+    {route:'PMPML 5A', sub:'Pune Station → Hadapsar', status:'yellow', eta:'11 min', seats:'8 seats free', next:null},
+  ];
+
+  const statusLabel = {
+    empty:'Empty', green:'Not crowded', yellow:'Moderate', orange:'Crowded', red:'Overcrowded'
+  };
+
+  function iconFor(status){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:14px;height:14px;"><path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4Z"/><path d="M9 12l2 2 4-4"/></svg>';
+  }
+
+  function renderBuses(){
+    const list = document.getElementById('busList');
+    list.innerHTML = busData.map(b => `
+      <div class="bus-card">
+        <div class="bus-card-top">
+          <div>
+            <div class="bus-route-name">${b.route}</div>
+            <div class="bus-route-sub">${b.sub}</div>
+          </div>
+          <div class="status-pill ${b.status}"><span class="dot"></span>${statusLabel[b.status]}</div>
+        </div>
+        <div class="bus-card-meta">
+          <span>ETA: <b>${b.eta}</b></span>
+          <span>${b.seats}</span>
+        </div>
+        ${b.next ? `<div class="next-bus-note">${iconFor(b.status)} ${b.next}</div>` : ''}
+      </div>
+    `).join('');
+  }
+  renderBuses();
+
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    document.getElementById('map').scrollIntoView({behavior:'smooth'});
+    renderBuses();
+  });
+
+  // ---- FAQ accordion ----
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ---- modals ----
+  function openModal(id){ document.getElementById(id).classList.add('open'); }
+  function closeModals(){ document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open')); }
+
+  document.getElementById('profileBtn').addEventListener('click', () => openModal('profileModal'));
+  document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('help').scrollIntoView({behavior:'smooth'}));
+  document.getElementById('reportBtn').addEventListener('click', () => openModal('reportModal'));
+  document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModals));
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModals(); });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
+
+  function submitReport(){
+    closeModals();
+    alert('Thanks — your report has been sent to the BUSFLOW technical team.');
+  }
+</script>
+
+</body>
+</html>2
